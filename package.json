@@ -1,0 +1,44 @@
+{
+  "name": "react-onsenui-kitchensink",
+  "version": "0.0.1",
+  "description": "Kitchen Sink example for Onsen UI 2.0 React extension.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run copy-css; watchify -vd -e main.js -o dist.js & http-server . -c 1",
+    "copy-css": "ncp node_modules/onsenui/css css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "ignore": "onsenui/**/*.js"
+        }
+      ]
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/argelius/react-onsenui-kitchensink.git"
+  },
+  "author": "Andreas Argelius <andreas@argeli.us>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/argelius/react-onsenui-kitchensink/issues"
+  },
+  "homepage": "https://github.com/argelius/react-onsenui-kitchensink#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^8.0.0",
+    "http-server": "^0.11.1",
+    "ncp": "^2.0.0",
+    "onsenui": "^2.9.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-onsenui": "^1.10.0",
+    "watchify": "^3.7.0"
+  }
+}
