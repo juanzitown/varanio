@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import NavigatorHelper from './helpers/NavigatorHelper';
 
 import { Page } from 'react-onsenui';
-import { Splitter, SplitterContent, SplitterSide } from 'react-onsenui';
+import { Splitter, SplitterContent, SplitterSide, Navigator } from 'react-onsenui';
 
 import SaldoAnual from './containers/saldo-anual/SaldoAnual';
 
@@ -31,7 +32,7 @@ function App( props = {} ) {
 			{ splitterSide }
 			
 			<SplitterContent>
-				<SaldoAnual />
+				<Navigator renderPage={ NavigatorHelper.renderer } initialRoute={ <SaldoAnual /> } />
 			</SplitterContent>
 		</Splitter>
 	);
