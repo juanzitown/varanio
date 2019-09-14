@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import NavigatorHelper from './helpers/NavigatorHelper';
+import NavigatorHelper from './js/NavigatorHelper';
 
 import { Page } from 'react-onsenui';
 import { Splitter, SplitterContent, SplitterSide, Navigator } from 'react-onsenui';

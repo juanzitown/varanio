@@ -1,10 +1,12 @@
 import React from 'react';
-import { Toolbar, ToolbarButton, Icon, Page, ActionSheet, ActionSheetButton, Fab } from 'react-onsenui';
+import moment from 'moment/min/moment-with-locales';
+import { Toolbar, ToolbarButton, Icon, Page, ActionSheet, ActionSheetButton, Fab, BackButton } from 'react-onsenui';
 
-import NavigatorHelper from '../../helpers/NavigatorHelper';
-import RecebimentoLista from './RecebimentoLista';
-import DespesaLista from './DespesaLista';
+import NavigatorHelper from '../../js/NavigatorHelper';
+import RecebimentoLista from './recebimento/RecebimentoLista';
+import DespesaLista from './despesa/DespesaLista';
 import RecebimentoFormulario from './recebimento/RecebimentoFormulario';
+import DespesaFormulario from './despesa/DespesaFormulario';
 
 /**
 |--------------------------------------------------
@@ -15,11 +17,25 @@ export default ( props = {} ) => {
 
 	/**
 	|--------------------------------------------------
+	| Reducers
+	|--------------------------------------------------
+	*/
+	const [state, dispatch] = React.useReducer( saldoAnualReducer, saldoAnualInitialProps );
+	console.log( state );
+
+	/**
+	|--------------------------------------------------
 	| Attributes
 	|--------------------------------------------------
 	*/
-	const navigator = props.navigator;
+	const [isDeleteMode, setIsDeleteMode] = React.useState( false );
 	const [showActionSheet, setShowActionSheet] = React.useState( false );
+	
+	//conta quantos recebimentos estão selecionados
+	const recebimentoSelectCount = state.recebimentoDataSource.reduce( ( count, recebimento ) => recebimento.checked ? ++count : count, 0 );
+
+	//conta quantas despesas estão selecionadas
+	const despesaSelectCount = state.despesaDataSource.reduce( ( count, despesa ) => despesa.checked ? ++count : count, 0 );
 
 	/**
 	|--------------------------------------------------
@@ -34,7 +50,15 @@ export default ( props = {} ) => {
 
 	function openDespesa() {
 		setShowActionSheet( false );
-		NavigatorHelper.pushPage( <RecebimentoFormulario /> );
+		NavigatorHelper.pushPage( <DespesaFormulario /> );
+	}
+
+	function onLongPress() {
+		setIsDeleteMode( true );
+	}
+
+	function onDeleteBatch() {
+		dispatch( { type: MAIN_STATE, payload: { teste: 'hihihi' } } );
 	}
 
 	/**
@@ -44,22 +68,26 @@ export default ( props = {} ) => {
 	*/
     const toolbar = (
 		<Toolbar>
-			<div className='left'>
-				<ToolbarButton><Icon icon='ion-navicon, material:md-menu' /></ToolbarButton>
+			<div className="left">
+				{ isDeleteMode ? <ToolbarButton onClick={ () => setIsDeleteMode( false ) }><Icon icon="ion-arrow-back, material:md-arrow-left" /></ToolbarButton> : null }
+				{ !isDeleteMode ? <ToolbarButton><Icon icon="ion-navicon, material:md-menu" /></ToolbarButton> : null }
 			</div>
-        	<div className='center'>SETEMBRO / 2019</div>
+        	<div className="center">{ isDeleteMode ? recebimentoSelectCount + despesaSelectCount : state.month.format( 'MMMM' ).toUpperCase() + ' | ' + state.month.format( 'YYYY ') }</div>
+			<div className="right">
+				{ isDeleteMode ? <ToolbarButton onClick={ () => onDeleteBatch() }><Icon icon="ion-trash, material:md-delete" /></ToolbarButton> : null }
+			</div>
       </Toolbar>
 	);
     
     return (
         <Page renderToolbar={ () => toolbar }>
-			<RecebimentoLista navigator={ navigator } />
-			<DespesaLista navigator={ navigator } />
-
-			<div>
-				<div className='left'>Saldo: </div>
-				<div className='center'>R$ 1000</div>
+			<div style={{ marginTop: '20px' }}>
+				<div style={{ textAlign: 'center', fontSize: '13px', opacity: '0.56' }}>Saldo previsto para o mês</div>
+				<div style={{ textAlign: 'center', fontSize: '22px', margin: '4px 0' }}>R$ 300,00</div>
 			</div>
+
+			<RecebimentoLista isDeleteMode={ isDeleteMode } onLongPress={ () => onLongPress() } />
+			<DespesaLista isDeleteMode={ isDeleteMode } onLongPress={ () => onLongPress() } />
 
 			<Fab position="bottom right" onClick={ () => setShowActionSheet( true ) }><Icon icon='fa-plus' /></Fab>
 
@@ -70,3 +98,38 @@ export default ( props = {} ) => {
         </Page>
     );
 }
+
+/**
+ * 
+ */
+const MAIN_STATE = 'MAIN_STATE';
+
+
+/**
+ * 
+ */
+moment.locale( 'pt-BR' );
+const saldoAnualInitialProps = {
+    recebimentoDataSource: [],
+    despesaDataSource: [],
+	isDeleteMode: false,
+	month: moment(),
+}
+
+/**
+|--------------------------------------------------
+| 
+|--------------------------------------------------
+*/
+const saldoAnualReducer = ( state = saldoAnualMainState, action ) => {
+    switch ( action.type ) {
+        case MAIN_STATE:
+            return state = {
+                ...state,
+                ...action.payload,
+            };
+
+        default:
+            return state;
+    }
+};

@@ -4,9 +4,9 @@
   "description": "Kitchen Sink example for Onsen UI 2.0 React extension.",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run copy-css; watchify -vd -e main.js -o dist.js & http-server . -c 1",
+    "dev": "npm run copy-css & http-server . -c 1",
     "copy-css": "ncp node_modules/onsenui/css css",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "watchify -vd -e main.js -o dist.js"
   },
   "browserify": {
     "transform": [
@@ -32,6 +32,7 @@
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.24.1",
     "babelify": "^8.0.0",
     "http-server": "^0.11.1",
     "ncp": "^2.0.0",
@@ -40,5 +41,8 @@
     "react-dom": "^16.2.0",
     "react-onsenui": "^1.10.0",
     "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "moment": "^2.24.0"
   }
 }
