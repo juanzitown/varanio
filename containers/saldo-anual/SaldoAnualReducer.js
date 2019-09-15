@@ -16,6 +16,10 @@ export const LIST_MODE = 'LIST_MODE';
 export const INSERT_RECEBIMENTO = 'INSERT_RECEBIMENTO';
 export const UPDATE_RECEBIMENTO = 'UPDATE_RECEBIMENTO';
 
+export const INSERT_DESPESA = 'INSERT_DESPESA';
+export const UPDATE_DESPESA = 'UPDATE_DESPESA';
+
+export const DELETE_BATCH = 'DELETE_BATCH';
 
 /**
  * 
@@ -53,11 +57,36 @@ export const saldoAnualReducer = ( state = saldoAnualMainState, action ) => {
             state.recebimentoDataSource = db.list( key );
             return state = { ...state };
 
-        case DELETE_RECEBIMENTO_BATCH:
-            var recebimentoIds = action.payload;
+        case INSERT_DESPESA:
+            var despesa = action.payload;
             var month = state.month;
-            var key = 'recebimento' + month.format( 'MMYYYY' );
-            console.log( db.deleteBatch( key, recebimentoIds ) );
+            var key = 'despesa' + month.format( 'MMYYYY' );
+            console.log( db.insert( key, despesa ) );
+            state.despesaDataSource = db.list( key );
+            return state = { ...state };
+
+        case UPDATE_DESPESA:
+            var despesa = action.payload;
+            var month = state.month;
+            var key = 'despesa' + month.format( 'MMYYYY' );
+            console.log( db.update( key, despesa ) );
+            state.despesaDataSource = db.list( key );
+            return state = { ...state };
+
+        case DELETE_BATCH:
+            var despesaIds = action.payload.despesaIds || [];
+            var recebimentoIds = action.payload.recebimentoIds || [];
+            var month = state.month;
+            var despesaKey = 'despesa' + month.format( 'MMYYYY' );
+            var recebimentoKey = 'recebimento' + month.format( 'MMYYYY' );
+
+            console.log( db.deleteBatch( recebimentoKey, recebimentoIds ) );
+            console.log( db.deleteBatch( despesaKey, despesaIds ) );
+            state.recebimentoDataSource = db.list( recebimentoKey );
+            state.despesaDataSource = db.list( despesaKey );
+            state.isDeleteMode = false;
+
+            return state = { ...state };
 
         case DELETE_MODE:
             state.recebimentoDataSource.map( recebimento => recebimento.checked = false );

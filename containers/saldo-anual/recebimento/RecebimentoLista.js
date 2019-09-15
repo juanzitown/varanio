@@ -1,9 +1,11 @@
 import React from 'react';
+import { toMoney } from '../../../js/Util';
+import NavigatorHelper from '../../../js/NavigatorHelper';
+import LongPressEvent from '../../../components/LongPressEvent';
+import { SaldoAnualContext, RERENDER, DELETE_MODE } from '../SaldoAnualReducer';
+
 import { List, ListTitle, ListItem, Checkbox, Button } from 'react-onsenui';
 
-import NavigatorHelper from '../../../js/NavigatorHelper';
-import { SaldoAnualContext, RERENDER, DELETE_MODE } from '../SaldoAnualReducer';
-import LongPressEvent from '../../../components/LongPressEvent';
 import RecebimentoFormulario from './RecebimentoFormulario';
 
 /**
@@ -73,8 +75,8 @@ export default ( props = {} ) => {
 				{ isDeleteMode ? <Checkbox checked={ recebimento.checked } onChange={ () => { recebimento.checked = !recebimento.checked; dispatch( { type: RERENDER } ); } } /> : null }
 			</div>
 			<div className="center" onClick={ () => isDeleteMode ? null : openRecebimentoFormulario( recebimento ) } { ...onLongPressEvent } onTouchEnd={ () => { recebimento.checked = !recebimento.checked; dispatch( { type: RERENDER } ); } }>
-				<div className="flex">{recebimento.nome}</div>
-				<div style={{ marginRight: '38px' }}>{recebimento.valor}</div>
+				<div className="flex">{ recebimento.nome }</div>
+				<div style={{ marginRight: '38px' }}>{ toMoney( recebimento.valor ) }</div>
 			</div>
 		</ListItem>
 	);

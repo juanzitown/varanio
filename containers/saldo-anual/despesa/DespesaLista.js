@@ -1,8 +1,10 @@
 import React from 'react';
-import { List, ListTitle, ListItem, Switch, Checkbox, Button } from 'react-onsenui';
-
+import { toMoney } from '../../../js/Util';
 import NavigatorHelper from '../../../js/NavigatorHelper';
 import { SaldoAnualContext, RERENDER, DELETE_MODE } from '../SaldoAnualReducer';
+
+import { List, ListTitle, ListItem, Switch, Checkbox, Button } from 'react-onsenui';
+
 import LongPressEvent from '../../../components/LongPressEvent';
 import DespesaFormulario from './DespesaFormulario';
 
@@ -49,7 +51,11 @@ export default ( props = {} ) => {
 	}
 
 	function openDespesaFormulario( despesa ) {
-		NavigatorHelper.pushPage( <DespesaFormulario despesa={ despesa } /> );
+		NavigatorHelper.pushPage( 
+			<SaldoAnualContext.Provider value={ [state, dispatch] }>
+				<DespesaFormulario despesa={ despesa } />
+			</SaldoAnualContext.Provider>
+		);
 	}
 
 	/**
@@ -65,8 +71,8 @@ export default ( props = {} ) => {
 				{ !isDeleteMode ? <Switch checked={ despesa.pago } onChange={ () => { despesa.pago = !despesa.pago; dispatch( { type: RERENDER } ); } } /> : null }
 			</div>
 			<div className="center" onClick={ () => isDeleteMode ? null : openDespesaFormulario( despesa ) } { ...onLongPressEvent } onTouchEnd={ () => { despesa.checked = !despesa.checked; dispatch( { type: RERENDER } ); } }>
-				<div className="flex">{despesa.nome}</div>
-				<div style={{ marginRight: '38px' }}>{despesa.valor}</div>
+				<div className="flex" style={ despesa.nome ? {} : { fontSize: '13px', fontWeight: '300', fontStyle: 'italic', opacity: '0.56' } }>{ despesa.nome ? despesa.nome : 'Sem descrição' }</div>
+				<div style={{ marginRight: '38px' }}>{ toMoney( despesa.valor ) }</div>
 			</div>
 		</ListItem>
 	);
@@ -75,7 +81,7 @@ export default ( props = {} ) => {
 		<div>
 			<ListTitle>DESPESAS { '(' + dataSource.length + ')' }</ListTitle>
 			<List dataSource={ dataSource } renderRow={ rowRenderer } />
-			{ !dataSource.length ? <div style={{ margin: '0 12px' }}><Button modifier="large--quiet" style={{ padding: '10px', color: '#f44336', border: '2px dashed currentColor', borderRadius: '28px' }}>ADICIONAR DESPESA</Button></div> : null }
+			{ !dataSource.length ? <div style={{ margin: '0 12px' }}><Button modifier="large--quiet" onClick={ () => openDespesaFormulario() } style={{ padding: '10px', color: '#f44336', border: '2px dashed currentColor', borderRadius: '28px' }}>ADICIONAR DESPESA</Button></div> : null }
 		</div>
     );
 }

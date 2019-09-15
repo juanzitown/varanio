@@ -1,4 +1,7 @@
 import React from 'react';
+import NavigatorHelper from '../../../js/NavigatorHelper';
+import { SaldoAnualContext, RERENDER, INSERT_DESPESA, UPDATE_DESPESA } from '../SaldoAnualReducer';
+
 import { Toolbar, Input, Page, BackButton, Fab, Icon, Switch } from 'react-onsenui';
 
 /**
@@ -13,9 +16,8 @@ export default ( props = {} ) => {
     | Attributes
     |--------------------------------------------------
     */
-
-    const despesa = props.despesa || {};
-    const [pago, setPago] = React.useState( despesa.pago );
+    const [state, dispatch] = React.useContext( SaldoAnualContext );
+    const despesa = props.despesa || { nome: '', valor: 0, pago: false };
 
     /**
     |--------------------------------------------------
@@ -24,7 +26,16 @@ export default ( props = {} ) => {
     */
 
     function onSave() {
+        const action = despesa.id ? UPDATE_DESPESA : INSERT_DESPESA;
+        const data = {
+            id: despesa.id,
+            nome: despesa.nome,
+            valor: parseFloat( despesa.valor ),
+            pago: despesa.pago,
+        };
 
+        dispatch( { type: action, payload: { ...data } } );
+        NavigatorHelper.popPage();
     }
 
     /**
@@ -38,8 +49,8 @@ export default ( props = {} ) => {
             <div className="center">{ despesa.id ? 'Alterar despesa' : 'Nova despesa' }</div>
             <div className="right">
                 <div style={{ position: 'relative', top: 'calc( 50% - 12px )' }}>
-                    <Switch inputId="pago" checked={ pago } onChange={ () => setPago( !pago ) } style={{ display: 'block' }} />
-                    <label htmlFor="pago" style={{ lineHeight: '1', position: 'absolute', top: '26px', left: '0', fontSize: '12px', opacity: '0.56' }}>{ pago ? 'Pago' : 'A pagar' }</label>
+                    <Switch inputId="pago" checked={ despesa.pago } onChange={ () => { despesa.pago = !despesa.pago; dispatch( { type: RERENDER } ); } } style={{ display: 'block' }} />
+                    <label htmlFor="pago" style={{ lineHeight: '1', position: 'absolute', top: '26px', left: '0', fontSize: '12px', opacity: '0.56' }}>{ despesa.pago ? 'Pago' : 'A pagar' }</label>
                 </div>
             </div>
         </Toolbar>
@@ -54,7 +65,7 @@ export default ( props = {} ) => {
                 <div style={{ height: '20px' }} />
 
                 <label htmlFor="valor" style={{ display: 'block', fontSize: '13px', opacity: '0.56', marginBottom: '4px' }}>Valor (R$)</label>
-                <Input inputId="valor" value={ despesa.valor } onChange={ ( event ) => despesa.valor = event.target.value } style={{ width: '100%' }} />
+                <Input className="input-lg" inputId="valor" type="number" value={ despesa.valor } onChange={ ( event ) => despesa.valor = event.target.value } style={{ width: '100%' }} />
             </div>
 
             <Fab position="bottom right" onClick={ () => onSave() }><Icon icon='fa-save' /></Fab>

@@ -9,14 +9,14 @@ import { Toolbar, Input, Page, BackButton, Fab, Icon } from 'react-onsenui';
 |--------------------------------------------------
 */
 export default ( props = {} ) => {
-
+    
     /**
     |--------------------------------------------------
     | Attributes
     |--------------------------------------------------
     */
     const [state, dispatch] = React.useContext( SaldoAnualContext );
-    const recebimento = props.recebimento || {};
+    const recebimento = props.recebimento || { nome: '', valor: 0, };
 
     /**
     |--------------------------------------------------
@@ -26,7 +26,13 @@ export default ( props = {} ) => {
 
     function onSave() {
         const action = recebimento.id ? UPDATE_RECEBIMENTO : INSERT_RECEBIMENTO;
-        dispatch( { type: action, payload: { ...recebimento } } );
+        const data = {
+            id: recebimento.id,
+            nome: recebimento.nome,
+            valor: parseFloat( recebimento.valor ),
+        };
+
+        dispatch( { type: action, payload: { ...data } } );
         NavigatorHelper.popPage();
     }
 
@@ -51,7 +57,7 @@ export default ( props = {} ) => {
                 <div style={{ height: '20px' }} />
 
                 <label htmlFor="valor" style={{ display: 'block', fontSize: '13px', opacity: '0.56', marginBottom: '4px' }}>Valor (R$)</label>
-                <Input inputId="valor" value={ recebimento.valor } onChange={ ( event ) => recebimento.valor = event.target.value } style={{ width: '100%' }} />
+                <Input className="input-lg" inputId="valor" value={ recebimento.valor } onChange={ ( event ) => recebimento.valor = event.target.value } style={{ width: '100%', height: '50px', fontSize: '40px' }} />
             </div>
 
             <Fab position="bottom right" onClick={ () => onSave() }><Icon icon='fa-save' /></Fab>

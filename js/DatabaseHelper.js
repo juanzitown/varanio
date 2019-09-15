@@ -52,3 +52,19 @@ export function update( key, value ) {
     //return
     return value;
 }
+
+/**
+ * 
+ */
+export function deleteBatch( key, ids = [] ) {
+    if( !localStorage[key] ) localStorage[key] = JSON.stringify( [] );
+
+    //parses
+    const array = JSON.parse( localStorage[key] );
+    const newArray = array.filter( item => !ids.includes( item.id ) );
+    const matchArray = array.filter( item => ids.includes( item.id ) );
+    localStorage[key] = JSON.stringify( newArray );
+
+    //return
+    return matchArray;
+}

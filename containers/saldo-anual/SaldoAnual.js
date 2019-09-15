@@ -1,8 +1,10 @@
 import React from 'react';
+import { toMoney } from '../../js/Util';
+import NavigatorHelper from '../../js/NavigatorHelper';
+import { SaldoAnualContext, saldoAnualReducer, saldoAnualInitialProps, LIST_MODE, DELETE_BATCH } from './SaldoAnualReducer';
+
 import { Toolbar, ToolbarButton, Icon, Page, ActionSheet, ActionSheetButton, Fab, BackButton } from 'react-onsenui';
 
-import NavigatorHelper from '../../js/NavigatorHelper';
-import { SaldoAnualContext, saldoAnualReducer, saldoAnualInitialProps, LIST_MODE } from './SaldoAnualReducer';
 import RecebimentoLista from './recebimento/RecebimentoLista';
 import DespesaLista from './despesa/DespesaLista';
 import RecebimentoFormulario from './recebimento/RecebimentoFormulario';
@@ -30,11 +32,13 @@ export default ( props = {} ) => {
 	const isDeleteMode = state.isDeleteMode || false;
 	const [showActionSheet, setShowActionSheet] = React.useState( false );
 	
-	//conta quantos recebimentos estão selecionados
+	//calcula recebimentos
 	const recebimentoSelectCount = state.recebimentoDataSource.reduce( ( count, recebimento ) => recebimento.checked ? ++count : count, 0 );
-
-	//conta quantas despesas estão selecionadas
+	const recebimentoTotal = state.recebimentoDataSource.reduce( ( sum, recebimento ) => recebimento.valor + sum, 0 );
+	
+	//calcula despesas
 	const despesaSelectCount = state.despesaDataSource.reduce( ( count, despesa ) => despesa.checked ? ++count : count, 0 );
+	const despesaTotal = state.despesaDataSource.reduce( ( sum, despesa ) => despesa.pago ? despesa.valor + sum : sum, 0 );
 
 	/**
 	|--------------------------------------------------
@@ -62,12 +66,10 @@ export default ( props = {} ) => {
 		);
 	}
 
-	function onLongPress() {
-		setIsDeleteMode( true );
-	}
-
 	function onDeleteBatch() {
-		//dispatch( { type: MAIN_STATE, payload: { teste: 'hihihi' } } );
+		const recebimentoIds = state.recebimentoDataSource.filter( recebimento => recebimento.checked ).flatMap( recebimento => recebimento.id );
+		const despesaIds = state.despesaDataSource.filter( despesa => despesa.checked ).flatMap( despesa => despesa.id );
+		dispatch( { type: DELETE_BATCH, payload: { recebimentoIds: recebimentoIds, despesaIds: despesaIds } } );
 	}
 
 	/**
@@ -92,7 +94,7 @@ export default ( props = {} ) => {
         <Page renderToolbar={ () => toolbar }>
 			<div style={{ marginTop: '20px' }}>
 				<div style={{ textAlign: 'center', fontSize: '13px', opacity: '0.56' }}>Saldo previsto para o mês</div>
-				<div style={{ textAlign: 'center', fontSize: '22px', margin: '4px 0' }}>R$ 300,00</div>
+				<div style={{ textAlign: 'center', fontSize: '32px', margin: '4px 0', color: ( recebimentoTotal - despesaTotal ) >= 0 ? 'rgba( 0, 255, 0, 0.7 )' : 'rgba( 255, 0, 0, 0.7 )' }}>{ toMoney( recebimentoTotal - despesaTotal ) }</div>
 			</div>
 
 			<SaldoAnualContext.Provider value={ [state, dispatch] }>
