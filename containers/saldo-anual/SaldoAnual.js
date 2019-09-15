@@ -89,9 +89,13 @@ export default ( props = {} ) => {
 			</div>
       </Toolbar>
 	);
+
+	const fab = (
+		<Fab position="bottom right" onClick={ () => setShowActionSheet( true ) }><Icon icon='fa-plus' /></Fab>
+	);
     
     return (
-        <Page renderToolbar={ () => toolbar }>
+        <Page renderToolbar={ () => toolbar } renderFixed={ () => fab }>
 			<div style={{ marginTop: '20px' }}>
 				<div style={{ textAlign: 'center', fontSize: '13px', opacity: '0.56' }}>Saldo previsto para o mês</div>
 				<div style={{ textAlign: 'center', fontSize: '32px', margin: '4px 0', color: ( recebimentoTotal - despesaTotal ) >= 0 ? 'rgba( 0, 255, 0, 0.7 )' : 'rgba( 255, 0, 0, 0.7 )' }}>{ toMoney( recebimentoTotal - despesaTotal ) }</div>
@@ -101,8 +105,6 @@ export default ( props = {} ) => {
 				<RecebimentoLista />
 				<DespesaLista />
 			</SaldoAnualContext.Provider>
-
-			<Fab position="bottom right" onClick={ () => setShowActionSheet( true ) }><Icon icon='fa-plus' /></Fab>
 
 			<ActionSheet isOpen={ showActionSheet } onCancel={ () => setShowActionSheet( false ) } title="Adicionar">
 				<ActionSheetButton icon="" onClick={ () => openRecebimento() }>Novo recebimento</ActionSheetButton>

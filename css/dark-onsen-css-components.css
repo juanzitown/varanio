@@ -4268,8 +4268,8 @@ h4, h5, h6 {
  */
 .list-item--chevron:before,
 .list-item__expand-chevron {
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
+  border-right: 2px solid #383833;
+  border-bottom: 2px solid #383833;
   width: 7px;
   height: 7px;
   background-color: transparent;

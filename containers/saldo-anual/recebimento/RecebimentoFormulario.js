@@ -57,7 +57,7 @@ export default ( props = {} ) => {
                 <div style={{ height: '20px' }} />
 
                 <label htmlFor="valor" style={{ display: 'block', fontSize: '13px', opacity: '0.56', marginBottom: '4px' }}>Valor (R$)</label>
-                <Input className="input-lg" inputId="valor" value={ recebimento.valor } onChange={ ( event ) => recebimento.valor = event.target.value } style={{ width: '100%', height: '50px', fontSize: '40px' }} />
+                <Input className="input-lg" inputId="valor" type="number" value={ recebimento.valor } onChange={ ( event ) => recebimento.valor = event.target.value } style={{ width: '100%', height: '50px', fontSize: '40px' }} />
             </div>
 
             <Fab position="bottom right" onClick={ () => onSave() }><Icon icon='fa-save' /></Fab>
