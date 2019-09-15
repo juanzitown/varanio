@@ -1,4 +1,6 @@
 import React from 'react';
+import NavigatorHelper from '../../../js/NavigatorHelper';
+import { SaldoAnualContext, INSERT_RECEBIMENTO, UPDATE_RECEBIMENTO } from '../SaldoAnualReducer';
 import { Toolbar, Input, Page, BackButton, Fab, Icon } from 'react-onsenui';
 
 /**
@@ -13,7 +15,8 @@ export default ( props = {} ) => {
     | Attributes
     |--------------------------------------------------
     */
-    const recebimento = props.recebimento || {}; //|| { nome: 'High Sales', valor: 2600 };
+    const [state, dispatch] = React.useContext( SaldoAnualContext );
+    const recebimento = props.recebimento || {};
 
     /**
     |--------------------------------------------------
@@ -22,7 +25,9 @@ export default ( props = {} ) => {
     */
 
     function onSave() {
-
+        const action = recebimento.id ? UPDATE_RECEBIMENTO : INSERT_RECEBIMENTO;
+        dispatch( { type: action, payload: { ...recebimento } } );
+        NavigatorHelper.popPage();
     }
 
     /**

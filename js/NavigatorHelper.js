@@ -21,7 +21,14 @@ export default class NavigatorHelper {
     /**
      *
      */
-    static pushPage( pageComponent, options = {} ) {
-        NavigatorHelper.navigator.pushPage( pageComponent, { animation: 'slide' } );
+    static pushPage( pageComponent, options = { animation: 'slide' } ) {
+        NavigatorHelper.navigator.pushPage( pageComponent, options );
+    }
+
+    /**
+     * 
+     */
+    static popPage( options = { animation: 'slide' } ) {
+        NavigatorHelper.navigator.popPage( options );
     }
 }

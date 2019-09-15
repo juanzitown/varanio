@@ -1,8 +1,8 @@
 import React from 'react';
-import moment from 'moment/min/moment-with-locales';
 import { Toolbar, ToolbarButton, Icon, Page, ActionSheet, ActionSheetButton, Fab, BackButton } from 'react-onsenui';
 
 import NavigatorHelper from '../../js/NavigatorHelper';
+import { SaldoAnualContext, saldoAnualReducer, saldoAnualInitialProps, LIST_MODE } from './SaldoAnualReducer';
 import RecebimentoLista from './recebimento/RecebimentoLista';
 import DespesaLista from './despesa/DespesaLista';
 import RecebimentoFormulario from './recebimento/RecebimentoFormulario';
@@ -21,14 +21,13 @@ export default ( props = {} ) => {
 	|--------------------------------------------------
 	*/
 	const [state, dispatch] = React.useReducer( saldoAnualReducer, saldoAnualInitialProps );
-	console.log( state );
 
 	/**
 	|--------------------------------------------------
 	| Attributes
 	|--------------------------------------------------
 	*/
-	const [isDeleteMode, setIsDeleteMode] = React.useState( false );
+	const isDeleteMode = state.isDeleteMode || false;
 	const [showActionSheet, setShowActionSheet] = React.useState( false );
 	
 	//conta quantos recebimentos estão selecionados
@@ -45,12 +44,22 @@ export default ( props = {} ) => {
 
 	function openRecebimento() {
 		setShowActionSheet( false );
-		NavigatorHelper.pushPage( <RecebimentoFormulario /> );
+
+		NavigatorHelper.pushPage( 
+			<SaldoAnualContext.Provider value={ [state, dispatch] }>
+				<RecebimentoFormulario />
+			</SaldoAnualContext.Provider>
+		);
 	}
 
 	function openDespesa() {
 		setShowActionSheet( false );
-		NavigatorHelper.pushPage( <DespesaFormulario /> );
+		
+		NavigatorHelper.pushPage( 
+			<SaldoAnualContext.Provider value={ [state, dispatch] }>
+				<DespesaFormulario />
+			</SaldoAnualContext.Provider>
+		);
 	}
 
 	function onLongPress() {
@@ -58,7 +67,7 @@ export default ( props = {} ) => {
 	}
 
 	function onDeleteBatch() {
-		dispatch( { type: MAIN_STATE, payload: { teste: 'hihihi' } } );
+		//dispatch( { type: MAIN_STATE, payload: { teste: 'hihihi' } } );
 	}
 
 	/**
@@ -69,7 +78,7 @@ export default ( props = {} ) => {
     const toolbar = (
 		<Toolbar>
 			<div className="left">
-				{ isDeleteMode ? <ToolbarButton onClick={ () => setIsDeleteMode( false ) }><Icon icon="ion-arrow-back, material:md-arrow-left" /></ToolbarButton> : null }
+				{ isDeleteMode ? <ToolbarButton onClick={ () => dispatch( { type: LIST_MODE } ) }><Icon icon="ion-arrow-back, material:md-arrow-left" /></ToolbarButton> : null }
 				{ !isDeleteMode ? <ToolbarButton><Icon icon="ion-navicon, material:md-menu" /></ToolbarButton> : null }
 			</div>
         	<div className="center">{ isDeleteMode ? recebimentoSelectCount + despesaSelectCount : state.month.format( 'MMMM' ).toUpperCase() + ' | ' + state.month.format( 'YYYY ') }</div>
@@ -86,8 +95,10 @@ export default ( props = {} ) => {
 				<div style={{ textAlign: 'center', fontSize: '22px', margin: '4px 0' }}>R$ 300,00</div>
 			</div>
 
-			<RecebimentoLista isDeleteMode={ isDeleteMode } onLongPress={ () => onLongPress() } />
-			<DespesaLista isDeleteMode={ isDeleteMode } onLongPress={ () => onLongPress() } />
+			<SaldoAnualContext.Provider value={ [state, dispatch] }>
+				<RecebimentoLista />
+				<DespesaLista />
+			</SaldoAnualContext.Provider>
 
 			<Fab position="bottom right" onClick={ () => setShowActionSheet( true ) }><Icon icon='fa-plus' /></Fab>
 
@@ -98,38 +109,3 @@ export default ( props = {} ) => {
         </Page>
     );
 }
-
-/**
- * 
- */
-const MAIN_STATE = 'MAIN_STATE';
-
-
-/**
- * 
- */
-moment.locale( 'pt-BR' );
-const saldoAnualInitialProps = {
-    recebimentoDataSource: [],
-    despesaDataSource: [],
-	isDeleteMode: false,
-	month: moment(),
-}
-
-/**
-|--------------------------------------------------
-| 
-|--------------------------------------------------
-*/
-const saldoAnualReducer = ( state = saldoAnualMainState, action ) => {
-    switch ( action.type ) {
-        case MAIN_STATE:
-            return state = {
-                ...state,
-                ...action.payload,
-            };
-
-        default:
-            return state;
-    }
-};

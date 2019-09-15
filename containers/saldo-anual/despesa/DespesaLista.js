@@ -1,10 +1,10 @@
 import React from 'react';
-import { List, ListTitle, ListItem, Switch, Checkbox } from 'react-onsenui';
+import { List, ListTitle, ListItem, Switch, Checkbox, Button } from 'react-onsenui';
 
 import NavigatorHelper from '../../../js/NavigatorHelper';
+import { SaldoAnualContext, RERENDER, DELETE_MODE } from '../SaldoAnualReducer';
 import LongPressEvent from '../../../components/LongPressEvent';
 import DespesaFormulario from './DespesaFormulario';
-import SaldoAnual from '../SaldoAnual';
 
 /**
 |--------------------------------------------------
@@ -15,32 +15,38 @@ export default ( props = {} ) => {
 
 	/**
 	|--------------------------------------------------
+	| Reducers
+	|--------------------------------------------------
+	*/
+	const [state, dispatch] = React.useContext( SaldoAnualContext );
+
+	/**
+	|--------------------------------------------------
 	| Attributes
 	|--------------------------------------------------
 	*/
-	const [dataSource, setDataSource] = React.useState( [ { nome: 'Conta de Luz', valor: 410 }, { nome: 'NET Claro TV', valor: 210 }, { nome: 'Mercado', valor: 820 } ] );
-	const onLongPress = props.onLongPress || function(){};
-	const onLongPressEvent = LongPressEvent( onLongPress, 800 );
-	const [isDeleteMode, setIsDeleteMode] = React.useState( false );
+	const dataSource = state.despesaDataSource || [];
+	const isDeleteMode = state.isDeleteMode || false;
 
-	const [, updateState] = React.useState();
-	const forceUpdate = React.useCallback( () => updateState( {} ), [] );
+	//event
+	const onLongPressEvent = LongPressEvent( onLongPress, 800 );
 
 	/**
 	|--------------------------------------------------
 	| Effects
 	|--------------------------------------------------
 	*/
-	React.useEffect( () => {
-		dataSource.map( despesa => despesa.checked = false );
-		setIsDeleteMode( props.isDeleteMode );
-	}, [props.isDeleteMode]);
+	React.useEffect( () => {}, [] );
 
 	/**
 	|--------------------------------------------------
 	| Functions
 	|--------------------------------------------------
 	*/
+
+	function onLongPress() {
+		dispatch( { type: DELETE_MODE } );
+	}
 
 	function openDespesaFormulario( despesa ) {
 		NavigatorHelper.pushPage( <DespesaFormulario despesa={ despesa } /> );
@@ -55,10 +61,10 @@ export default ( props = {} ) => {
 	const rowRenderer = ( despesa, index ) => (
 		<ListItem key={ index } tappable modifier={ isDeleteMode ? '' : 'chevron' }>
 			<div className="left" style={{ height: '48px' }}>
-				{ isDeleteMode ? <Checkbox checked={ despesa.checked } onChange={ () => { despesa.checked = !despesa.checked; forceUpdate(); } } /> : null }
-				{ !isDeleteMode ? <Switch checked={ despesa.pago } onChange={ () => { despesa.pago = !despesa.pago; forceUpdate(); } } /> : null }
+				{ isDeleteMode ? <Checkbox checked={ despesa.checked } onChange={ () => { despesa.checked = !despesa.checked; dispatch( { type: RERENDER } ); } } /> : null }
+				{ !isDeleteMode ? <Switch checked={ despesa.pago } onChange={ () => { despesa.pago = !despesa.pago; dispatch( { type: RERENDER } ); } } /> : null }
 			</div>
-			<div className="center" onClick={ () => isDeleteMode ? null : openDespesaFormulario( despesa ) } { ...onLongPressEvent } onTouchEnd={ () => { despesa.checked = true; forceUpdate(); } }>
+			<div className="center" onClick={ () => isDeleteMode ? null : openDespesaFormulario( despesa ) } { ...onLongPressEvent } onTouchEnd={ () => { despesa.checked = !despesa.checked; dispatch( { type: RERENDER } ); } }>
 				<div className="flex">{despesa.nome}</div>
 				<div style={{ marginRight: '38px' }}>{despesa.valor}</div>
 			</div>
@@ -69,6 +75,7 @@ export default ( props = {} ) => {
 		<div>
 			<ListTitle>DESPESAS { '(' + dataSource.length + ')' }</ListTitle>
 			<List dataSource={ dataSource } renderRow={ rowRenderer } />
+			{ !dataSource.length ? <div style={{ margin: '0 12px' }}><Button modifier="large--quiet" style={{ padding: '10px', color: '#f44336', border: '2px dashed currentColor', borderRadius: '28px' }}>ADICIONAR DESPESA</Button></div> : null }
 		</div>
     );
 }
