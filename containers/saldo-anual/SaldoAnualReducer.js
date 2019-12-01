@@ -10,6 +10,7 @@ console.log( month.format( 'MMYYYY' ) );
  * 
  */
 export const RERENDER = 'RERENDER';
+export const CHANGE_MONTH = 'CHANGE_MONTH';
 export const DELETE_MODE = 'DELETE_MODE';
 export const LIST_MODE = 'LIST_MODE';
 
@@ -97,6 +98,12 @@ export const saldoAnualReducer = ( state = saldoAnualMainState, action ) => {
         case LIST_MODE:
                 state.isDeleteMode = false;
                 return state = { ...state, ...action.payload };
+
+        case CHANGE_MONTH:
+                state.month = action.payload.month.startOf( 'month' );
+                state.recebimentoDataSource = db.list( 'recebimento' + state.month.format( 'MMYYYY' ) );
+                state.despesaDataSource = db.list( 'despesa' + state.month.format( 'MMYYYY' ) );
+                return state = { ...state };
 
         default:
             return state;

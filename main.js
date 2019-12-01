@@ -4,10 +4,12 @@ import NavigatorHelper from './js/NavigatorHelper';
 
 import { Page } from 'react-onsenui';
 import { Splitter, SplitterContent, SplitterSide, Navigator } from 'react-onsenui';
-
 import SaldoAnual from './containers/saldo-anual/SaldoAnual';
+import { saldoAnualReducer, saldoAnualInitialProps } from './containers/saldo-anual/SaldoAnualReducer';
 
 function App( props = {} ) {
+
+	const [state, dispatch] = React.useReducer( saldoAnualReducer, saldoAnualInitialProps );
 	const [showMenu, setShowMenu] = React.useState( false );
 
 	const splitterSide = (

@@ -68,3 +68,27 @@ export function deleteBatch( key, ids = [] ) {
     //return
     return matchArray;
 }
+
+/**
+ * 
+ */
+export function copySourceMonthToDestinationMonth( sourceMonthKey, destinationMonthKey ) {
+    const sourceDespesa = localStorage[ 'despesa' + sourceMonthKey ] || '[]';
+    const destinationDespesa = localStorage[ 'despesa' + destinationMonthKey ] || '[]';
+    const sourceRecebimento = localStorage[ 'recebimento' + sourceMonthKey ] || '[]';
+    const destinationRecebimento = localStorage[ 'recebimento' + destinationMonthKey ] || '[]';
+
+    //parses despesa
+    const despesaSourceArray = JSON.parse( localStorage[ 'despesa' + sourceMonthKey ] );
+    const despesaDestinationArray = JSON.parse( localStorage[ 'despesa' + destinationMonthKey ] );
+    const newDespesaArray = [ ...despesaDestinationArray, ...despesaSourceArray ];
+    localStorage[ 'despesa' + destinationMonthKey ] = JSON.stringify( newDespesaArray );
+
+    //parses recebimento
+    const recebimentoSourceArray = JSON.parse( localStorage[ 'recebimento' + sourceMonthKey ] );
+    const recebimentoDestinationArray = JSON.parse( localStorage[ 'recebimento' + destinationMonthKey ] );
+    const newRecebimentoArray = [ ...recebimentoDestinationArray, ...recebimentoSourceArray ];
+    localStorage[ 'recebimento' + destinationMonthKey ] = JSON.stringify( newRecebimentoArray );
+
+    return;
+}
